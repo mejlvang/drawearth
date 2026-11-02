@@ -8,21 +8,6 @@ const PALETTES = {
   dark: { ink: '#fff', paper: '#000', land: '#141414', water: '#262626', building: '#1c1c1c', road: '#2a2a2a', border: '#555', label: '#777' },
 };
 
-// [layer, paint property, palette key]
-const THEMED = [
-  ['land', 'background-color', 'land'],
-  ['water', 'fill-color', 'water'],
-  ['buildings', 'fill-color', 'building'],
-  ['roads', 'line-color', 'road'],
-  ['borders', 'line-color', 'border'],
-  ['country-labels', 'text-color', 'label'],
-  ['city-labels', 'text-color', 'label'],
-  ['clusters', 'circle-color', 'ink'],
-  ['cluster-count', 'text-color', 'paper'],
-  ['points', 'circle-color', 'ink'],
-  ['points', 'circle-stroke-color', 'paper'],
-];
-
 const darkQuery = matchMedia('(prefers-color-scheme: dark)');
 const palette = () => PALETTES[darkQuery.matches ? 'dark' : 'light'];
 
@@ -77,14 +62,44 @@ const style = {
   ],
 };
 
-const drawings = await fetch('/data/drawings.json', { cache: 'no-cache' }).then((r) => r.json());
+const [drawings, drawnCountries] = await Promise.all([
+  fetch('/data/drawings.json', { cache: 'no-cache' }).then((r) => r.json()),
+  fetch('/data/drawn-countries.json', { cache: 'no-cache' }).then((r) => r.json()),
+]);
 const byId = new Map(drawings.map((d) => [d.id, d]));
+
+// True when a cluster sits on a drawn (inverted) country. Single dots always do.
+const drawnPolygons = drawnCountries.features.flatMap(({ geometry: g }) =>
+  g.type === 'Polygon' ? [g.coordinates] : g.coordinates);
+const onDrawn = drawnPolygons.length
+  ? ['within', { type: 'MultiPolygon', coordinates: drawnPolygons }]
+  : false;
+const dotColor = (c) => ['case', onDrawn, c.paper, c.ink];
+const dotContrast = (c) => ['case', onDrawn, c.ink, c.paper];
+
+// [layer, paint property, palette → value]
+const THEMED = [
+  ['land', 'background-color', (c) => c.land],
+  ['drawn', 'fill-color', (c) => c.ink],
+  ['water', 'fill-color', (c) => c.water],
+  ['buildings', 'fill-color', (c) => c.building],
+  ['roads', 'line-color', (c) => c.road],
+  ['borders', 'line-color', (c) => c.border],
+  ['country-labels', 'text-color', (c) => c.label],
+  ['city-labels', 'text-color', (c) => c.label],
+  ['clusters', 'circle-color', dotColor],
+  ['cluster-count', 'text-color', dotContrast],
+  ['points', 'circle-color', (c) => c.paper],
+  ['points', 'circle-stroke-color', (c) => c.ink],
+];
 
 renderStats(drawings);
 
 // Fit the globe between the side panels (diameter ≈ 512·2^z / π px), then nudge in a bit.
-const room = Math.min(innerWidth - 2 * 300, innerHeight - 160);
-const startZoom = Math.min(2.5, Math.max(0.8, Math.log2((room * Math.PI) / 512) + 0.5));
+const room = innerWidth > 720
+  ? Math.min(innerWidth - 2 * 300, innerHeight - 160)
+  : Math.min(innerWidth - 32, innerHeight - 320);
+const startZoom = Math.min(2.5, Math.max(0.8, Math.log2((Math.max(room, 100) * Math.PI) / 512) + 0.5));
 
 const map = new maplibregl.Map({
   container: 'map',
@@ -99,13 +114,20 @@ const map = new maplibregl.Map({
 
 function applyTheme() {
   const colors = palette();
-  for (const [layer, prop, key] of THEMED) {
-    if (map.getLayer(layer)) map.setPaintProperty(layer, prop, colors[key]);
+  for (const [layer, prop, value] of THEMED) {
+    if (map.getLayer(layer)) map.setPaintProperty(layer, prop, value(colors));
   }
 }
 darkQuery.addEventListener('change', applyTheme);
 
 map.on('load', () => {
+  map.addSource('drawn-countries', { type: 'geojson', data: drawnCountries });
+  // Below water so the detailed tile coastline trims the coarser country outline.
+  map.addLayer({
+    id: 'drawn', type: 'fill', source: 'drawn-countries',
+    paint: { 'fill-color': initial.ink },
+  }, 'water');
+
   map.addSource('drawings', {
     type: 'geojson',
     cluster: true,
@@ -124,7 +146,7 @@ map.on('load', () => {
   map.addLayer({
     id: 'clusters', type: 'circle', source: 'drawings', filter: ['has', 'point_count'],
     paint: {
-      'circle-color': initial.ink,
+      'circle-color': dotColor(initial),
       'circle-radius': ['interpolate', ['linear'], ['zoom'],
         ZOOMED - 1, 4,
         ZOOMED, ['step', ['get', 'point_count'], 12, 10, 16, 50, 22],
@@ -135,16 +157,16 @@ map.on('load', () => {
   map.addLayer({
     id: 'cluster-count', type: 'symbol', source: 'drawings', filter: ['has', 'point_count'],
     layout: { 'text-field': ['get', 'point_count_abbreviated'], 'text-font': ['Noto Sans Regular'], 'text-size': 11 },
-    paint: { 'text-color': initial.paper, 'text-opacity': fade(ZOOMED - 0.3, ZOOMED) },
+    paint: { 'text-color': dotContrast(initial), 'text-opacity': fade(ZOOMED - 0.3, ZOOMED) },
   });
 
   map.addLayer({
     id: 'points', type: 'circle', source: 'drawings', filter: ['!', ['has', 'point_count']],
     paint: {
-      'circle-color': initial.ink,
+      'circle-color': initial.paper,
       'circle-radius': ['interpolate', ['linear'], ['zoom'], ZOOMED - 1, 3, ZOOMED, 6],
-      'circle-stroke-color': initial.paper,
-      'circle-stroke-width': ['interpolate', ['linear'], ['zoom'], ZOOMED - 1, 0, ZOOMED, 2],
+      'circle-stroke-color': initial.ink,
+      'circle-stroke-width': ['interpolate', ['linear'], ['zoom'], ZOOMED - 1, 1, ZOOMED, 2],
     },
   });
 
@@ -203,15 +225,17 @@ for (const type of ['wheel', 'mousedown', 'touchstart']) {
 
 function renderStats(list) {
   document.getElementById('total').textContent = `${list.length} drawings`;
-  fillTally('mediums', countBy(list, (d) => d.medium));
-  const countries = countBy(list, (d) => d.country);
+  fillTally('mediums', countBy(list, (d) => d.mediums));
+  const countries = countBy(list, (d) => [d.country]);
   fillTally('countries', countries, countryName);
   document.getElementById('coverage').textContent = `${countries.length}/${TOTAL_COUNTRIES} countries drawn`;
 }
 
-function countBy(list, key) {
+function countBy(list, keys) {
   const counts = new Map();
-  for (const item of list) counts.set(key(item), (counts.get(key(item)) || 0) + 1);
+  for (const item of list) {
+    for (const key of keys(item)) counts.set(key, (counts.get(key) || 0) + 1);
+  }
   return [...counts].sort((a, b) => b[1] - a[1] || String(a[0]).localeCompare(b[0]));
 }
 
@@ -234,10 +258,10 @@ const img = document.getElementById('drawing-img');
 function openDrawing(d) {
   if (!d) return;
   img.src = d.image;
-  img.alt = `Drawing ${formatId(d.id)}: ${d.medium}, ${countryName(d.country)}`;
+  img.alt = `Drawing ${formatId(d.id)}: ${d.mediums.join(', ')}, ${countryName(d.country)}`;
   const rows = [
     ['id', formatId(d.id)],
-    ['medium', d.medium],
+    ['medium', d.mediums.join(', ')],
     ['type', d.type],
     ['country', countryName(d.country).toLowerCase()],
     ['coordinates', formatCoords(d.lat, d.lng)],

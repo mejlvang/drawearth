@@ -45,9 +45,15 @@
             <label class="inline"><input type="radio" name="type" value="digital"> digital</label>
           </fieldset>
 
-          <label>medium
-            <select name="medium" required></select>
-          </label>
+          <fieldset>
+            <legend>medium <span class="muted">pick one or more</span></legend>
+            <div id="mediums" class="tags"></div>
+            <div class="tag-add">
+              <input type="text" name="newMedium" list="medium-suggestions" placeholder="new medium" autocomplete="off" spellcheck="false" maxlength="30">
+              <button type="button" id="add-medium" class="link">add</button>
+            </div>
+            <datalist id="medium-suggestions"></datalist>
+          </fieldset>
 
           <label>coordinates <span class="muted">lat, lng — or paste a maps url</span>
             <input type="text" name="coords" required autocomplete="off" spellcheck="false">

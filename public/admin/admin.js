@@ -1,4 +1,4 @@
-import { MEDIUMS, TYPES, countryList, countryName, formatCoords, formatId } from '/shared.js';
+import { DEFAULT_MEDIUMS, TYPES, countryList, countryName, formatCoords, formatId, isValidTag, normalizeTag } from '/shared.js';
 import { UPLOAD_DIR } from './config.js';
 import * as github from './github.js';
 
@@ -17,10 +17,10 @@ const coordsHint = $('#coords-parsed');
 let drawings = [];
 let editingId = null;
 let coords = null;
+let selectedMediums = new Set();
 
 /* ---------- setup ---------- */
 
-editor.medium.append(...MEDIUMS.map((m) => new Option(m, m)));
 editor.country.append(...countryList().map(({ code, name }) => new Option(name, code)));
 
 if (github.getToken()) {
@@ -71,6 +71,7 @@ async function loadDrawings(list) {
   drawings = list || (await github.loadDrawings());
   drawings.sort((a, b) => b.id - a.id);
   rows.replaceChildren(...drawings.map(renderRow));
+  renderMediums();
 }
 
 function renderRow(d) {
@@ -83,7 +84,7 @@ function renderRow(d) {
   const cells = [
     img,
     formatId(d.id),
-    d.medium,
+    d.mediums.join(', '),
     d.type,
     countryName(d.country).toLowerCase(),
     formatCoords(d.lat, d.lng),
@@ -142,7 +143,8 @@ function startEdit(d) {
   $('#submit').textContent = 'save';
   $('#cancel').hidden = false;
   editor.type.value = d.type;
-  editor.medium.value = d.medium;
+  selectedMediums = new Set(d.mediums);
+  renderMediums();
   editor.coords.value = `${d.lat}, ${d.lng}`;
   editor.country.value = d.country;
   editor.comment.value = d.comment || '';
@@ -155,7 +157,8 @@ function startEdit(d) {
 function resetEditor() {
   editingId = null;
   editor.reset();
-  syncType();
+  selectedMediums = new Set();
+  renderMediums();
   editor.classList.remove('editing');
   $('#editor-title').textContent = 'new drawing';
   $('#submit').textContent = 'upload';
@@ -168,12 +171,51 @@ function resetEditor() {
 
 $('#cancel').addEventListener('click', resetEditor);
 
-editor.medium.addEventListener('change', syncType);
-syncType();
+/* ---------- medium tags ---------- */
 
-function syncType() {
-  editor.type.value = editor.medium.value === 'procreate' ? 'digital' : 'analog';
+function knownMediums() {
+  const counts = new Map(DEFAULT_MEDIUMS.map((m) => [m, 0]));
+  for (const d of drawings) for (const m of d.mediums) counts.set(m, (counts.get(m) || 0) + 1);
+  for (const m of selectedMediums) if (!counts.has(m)) counts.set(m, 0);
+  return [...counts].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).map(([m]) => m);
 }
+
+function renderMediums() {
+  const known = knownMediums();
+  $('#mediums').replaceChildren(...known.map((m) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.textContent = m;
+    b.setAttribute('aria-pressed', selectedMediums.has(m));
+    b.addEventListener('click', () => {
+      selectedMediums.has(m) ? selectedMediums.delete(m) : selectedMediums.add(m);
+      renderMediums();
+    });
+    return b;
+  }));
+  $('#medium-suggestions').replaceChildren(...known.map((m) => new Option(m)));
+}
+
+function addMedium() {
+  const tag = normalizeTag(editor.newMedium.value);
+  if (!tag) return;
+  if (!isValidTag(tag)) {
+    editor.querySelector('.error').textContent = 'medium: letters, numbers, space, & + - only';
+    return;
+  }
+  selectedMediums.add(tag);
+  editor.newMedium.value = '';
+  editor.querySelector('.error').textContent = '';
+  renderMediums();
+}
+
+$('#add-medium').addEventListener('click', addMedium);
+editor.newMedium.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' || e.key === ',') {
+    e.preventDefault();
+    addMedium();
+  }
+});
 
 editor.image.addEventListener('change', () => {
   const file = editor.image.files[0];
@@ -238,16 +280,18 @@ editor.addEventListener('submit', async (e) => {
   const file = editor.image.files[0];
   if (!editingId && !file) return (error.textContent = 'pick an image');
   if (!coords) return (error.textContent = 'coordinates are missing');
+  if (editor.newMedium.value.trim()) addMedium();
 
   const data = {
     type: editor.type.value,
-    medium: editor.medium.value,
+    mediums: [...selectedMediums],
     lat: coords.lat,
     lng: coords.lng,
     country: editor.country.value,
     comment: editor.comment.value.trim(),
   };
-  if (!TYPES.includes(data.type) || !MEDIUMS.includes(data.medium) || !/^[A-Z]{2}$/.test(data.country)) {
+  if (!data.mediums.length) return (error.textContent = 'pick at least one medium');
+  if (!TYPES.includes(data.type) || !data.mediums.every(isValidTag) || !/^[A-Z]{2}$/.test(data.country)) {
     return (error.textContent = 'check type, medium and country');
   }
 

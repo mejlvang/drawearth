@@ -1,5 +1,13 @@
-export const MEDIUMS = ['procreate', 'linocut', 'pencil', 'paint', 'collage'];
+export const DEFAULT_MEDIUMS = ['procreate', 'linocut', 'pencil', 'paint', 'collage'];
 export const TYPES = ['analog', 'digital'];
+
+export function normalizeTag(value) {
+  return value.trim().toLowerCase().replace(/\s+/g, ' ').slice(0, 30);
+}
+
+export function isValidTag(tag) {
+  return /^[\p{L}\p{N}][\p{L}\p{N} &+-]*$/u.test(tag);
+}
 export const TOTAL_COUNTRIES = 195;
 
 const regionNames = new Intl.DisplayNames(['en'], { type: 'region' });

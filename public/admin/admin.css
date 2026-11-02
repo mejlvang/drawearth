@@ -88,6 +88,34 @@ button.link {
 
 .actions { display: flex; gap: 16px; align-items: center; }
 
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.tags button {
+  padding: 2px 10px;
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.tags button[aria-pressed="true"] {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.tag-add {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.tag-add input { flex: 1; }
+
 .preview {
   max-width: 100%;
   max-height: 360px;
