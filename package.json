@@ -1,0 +1,15 @@
+{
+  "name": "drawearth",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "node scripts/build.js",
+    "dev": "node scripts/build.js && node scripts/serve.js"
+  },
+  "dependencies": {
+    "maplibre-gl": "^6.16.0"
+  }
+}

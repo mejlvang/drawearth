@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: blob:; connect-src 'self' https://tiles.openfreemap.org; worker-src 'self' blob:; style-src 'self'; script-src 'self'; object-src 'none'; base-uri 'none'">
+  <title>drawearth</title>
+  <meta name="description" content="Drawings of places around the world, drawn from street level.">
+  <link rel="preload" href="/fonts/space-mono-400.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/vendor/maplibre-gl.css">
+  <link rel="stylesheet" href="/style.css">
+  <script src="/app.js" type="module"></script>
+</head>
+<body>
+  <header class="site-header">
+    <h1>drawearth</h1>
+    <p class="muted" id="total"></p>
+  </header>
+
+  <div id="map" aria-label="Map of drawings"></div>
+
+  <aside class="panel panel-left">
+    <h2>Mediums</h2>
+    <ol id="mediums" class="tally"></ol>
+  </aside>
+
+  <aside class="panel panel-right">
+    <h2>Countries</h2>
+    <ol id="countries" class="tally"></ol>
+    <p class="muted" id="coverage"></p>
+  </aside>
+
+  <p class="hint muted">scroll to zoom</p>
+
+  <dialog id="drawing" class="modal">
+    <form method="dialog"><button class="close" aria-label="Close">close ×</button></form>
+    <figure>
+      <img id="drawing-img" alt="">
+      <figcaption>
+        <dl id="drawing-meta" class="meta"></dl>
+        <p id="drawing-comment"></p>
+      </figcaption>
+    </figure>
+  </dialog>
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' blob: https://raw.githubusercontent.com; connect-src 'self' https://api.github.com https://nominatim.openstreetmap.org; style-src 'self'; script-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <title>drawearth / admin</title>
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/admin/admin.css">
+  <script src="/admin/admin.js" type="module"></script>
+</head>
+<body class="admin">
+  <header class="admin-header">
+    <h1><a href="/">drawearth</a> / admin</h1>
+    <button id="logout" class="link" hidden>log out</button>
+  </header>
+
+  <form id="login" class="stack narrow" hidden>
+    <label>github token
+      <input type="password" name="token" autocomplete="off" required autofocus spellcheck="false">
+    </label>
+    <p class="muted small">fine-grained token · only this repo · contents: read and write</p>
+    <button type="submit">log in</button>
+    <p class="error" role="alert"></p>
+  </form>
+
+  <main id="cms" hidden>
+    <form id="editor" class="editor">
+      <h2 id="editor-title">new drawing</h2>
+
+      <div class="grid">
+        <div class="stack">
+          <label>image
+            <input type="file" name="image" accept="image/jpeg,image/png,image/webp,image/heic">
+          </label>
+          <img id="preview" class="preview" alt="" hidden>
+        </div>
+
+        <div class="stack">
+          <fieldset>
+            <legend>type</legend>
+            <label class="inline"><input type="radio" name="type" value="analog" checked> analog</label>
+            <label class="inline"><input type="radio" name="type" value="digital"> digital</label>
+          </fieldset>
+
+          <label>medium
+            <select name="medium" required></select>
+          </label>
+
+          <label>coordinates <span class="muted">lat, lng — or paste a maps url</span>
+            <input type="text" name="coords" required autocomplete="off" spellcheck="false">
+          </label>
+          <p id="coords-parsed" class="muted small"></p>
+
+          <label>country
+            <select name="country" required>
+              <option value="">—</option>
+            </select>
+          </label>
+
+          <label>comment <span class="muted">optional</span>
+            <textarea name="comment" rows="3" maxlength="1000"></textarea>
+          </label>
+
+          <div class="actions">
+            <button type="submit" id="submit">upload</button>
+            <button type="button" id="cancel" class="link" hidden>cancel</button>
+          </div>
+          <p class="error" role="alert"></p>
+          <p id="status" class="muted" role="status"></p>
+        </div>
+      </div>
+    </form>
+
+    <table class="list">
+      <thead>
+        <tr>
+          <th></th><th>id</th><th>medium</th><th>type</th><th>country</th><th>coordinates</th><th>comment</th><th></th>
+        </tr>
+      </thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </main>
+</body>
+</html>
