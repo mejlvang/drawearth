@@ -246,13 +246,15 @@ function setCoords(lat, lng) {
 }
 
 function parseCoords(value) {
+  const url = URL.canParse(value) ? new URL(value) : null;
+  const coordinateValue = url?.searchParams.get('link') || value;
   const patterns = [
     /@(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/, // maps url: /@55.67,12.56,3a
     /!3d(-?\d+(?:\.\d+)?)!4d(-?\d+(?:\.\d+)?)/, // maps url data block
     /^\s*(-?\d+(?:\.\d+)?)\s*[,\s]\s*(-?\d+(?:\.\d+)?)\s*$/, // "55.67, 12.56"
   ];
   for (const re of patterns) {
-    const m = value.match(re);
+    const m = coordinateValue.match(re);
     if (!m) continue;
     const lat = Number(m[1]);
     const lng = Number(m[2]);
