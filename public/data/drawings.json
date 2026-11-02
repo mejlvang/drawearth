@@ -1,14 +1,1 @@
-[
-  {
-    "id": 1,
-    "type": "digital",
-    "medium": "procreate",
-    "lat": 34.9380818,
-    "lng": 73.7321551,
-    "country": "PK",
-    "comment": "Test",
-    "createdAt": "2026-11-02T12:55:03.499Z",
-    "image": "/uploads/1-cf6c6a13.webp",
-    "thumb": "/uploads/1-cf6c6a13-thumb.webp"
-  }
-]
+[]
