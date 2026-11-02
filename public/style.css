@@ -13,12 +13,24 @@
 }
 
 :root {
+  color-scheme: light dark;
   --ink: #000;
   --paper: #fff;
   --muted: #888;
   --line: #e2e2e2;
+  --backdrop: rgba(255, 255, 255, 0.85);
   --font: "Space Mono", ui-monospace, Menlo, Consolas, monospace;
   --gap: 24px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ink: #fff;
+    --paper: #000;
+    --muted: #777;
+    --line: #262626;
+    --backdrop: rgba(0, 0, 0, 0.85);
+  }
 }
 
 * { box-sizing: border-box; }
@@ -139,7 +151,7 @@ button, input, select, textarea {
   max-height: calc(100vh - 32px);
 }
 
-.modal::backdrop { background: rgba(255, 255, 255, 0.85); }
+.modal::backdrop { background: var(--backdrop); }
 
 .modal figure {
   margin: 0;
@@ -184,4 +196,12 @@ button, input, select, textarea {
 .maplibregl-ctrl-attrib a {
   font: 10px var(--font);
   color: var(--muted);
+}
+
+.maplibregl-ctrl.maplibregl-ctrl-attrib {
+  background: var(--paper);
+}
+
+@media (prefers-color-scheme: dark) {
+  .maplibregl-ctrl-attrib-button { filter: invert(1); }
 }

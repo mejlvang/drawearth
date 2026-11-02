@@ -2,11 +2,34 @@ import * as maplibregl from '/vendor/maplibre-gl.mjs';
 import { TOTAL_COUNTRIES, countryName, formatCoords, formatId } from './shared.js';
 
 const ZOOMED = 3;
-const INK = '#000';
-const PAPER = '#fff';
+
+const PALETTES = {
+  light: { ink: '#000', paper: '#fff', land: '#fafafa', water: '#e2e2e2', building: '#eee', road: '#dcdcdc', border: '#aaa', label: '#888' },
+  dark: { ink: '#fff', paper: '#000', land: '#141414', water: '#262626', building: '#1c1c1c', road: '#2a2a2a', border: '#555', label: '#777' },
+};
+
+// [layer, paint property, palette key]
+const THEMED = [
+  ['land', 'background-color', 'land'],
+  ['water', 'fill-color', 'water'],
+  ['buildings', 'fill-color', 'building'],
+  ['roads', 'line-color', 'road'],
+  ['borders', 'line-color', 'border'],
+  ['country-labels', 'text-color', 'label'],
+  ['city-labels', 'text-color', 'label'],
+  ['clusters', 'circle-color', 'ink'],
+  ['cluster-count', 'text-color', 'paper'],
+  ['points', 'circle-color', 'ink'],
+  ['points', 'circle-stroke-color', 'paper'],
+];
+
+const darkQuery = matchMedia('(prefers-color-scheme: dark)');
+const palette = () => PALETTES[darkQuery.matches ? 'dark' : 'light'];
 
 const label = ['coalesce', ['get', 'name:en'], ['get', 'name']];
 const fade = (from, to) => ['interpolate', ['linear'], ['zoom'], from, 0, to, 1];
+
+const initial = palette();
 
 const style = {
   version: 8,
@@ -20,36 +43,36 @@ const style = {
     },
   },
   layers: [
-    { id: 'land', type: 'background', paint: { 'background-color': '#fafafa' } },
-    { id: 'water', type: 'fill', source: 'osm', 'source-layer': 'water', paint: { 'fill-color': '#e2e2e2' } },
+    { id: 'land', type: 'background', paint: { 'background-color': initial.land } },
+    { id: 'water', type: 'fill', source: 'osm', 'source-layer': 'water', paint: { 'fill-color': initial.water } },
     {
       id: 'buildings', type: 'fill', source: 'osm', 'source-layer': 'building', minzoom: 14,
-      paint: { 'fill-color': '#eee' },
+      paint: { 'fill-color': initial.building },
     },
     {
       id: 'roads', type: 'line', source: 'osm', 'source-layer': 'transportation', minzoom: 6,
       filter: ['in', ['get', 'class'], ['literal', ['motorway', 'trunk', 'primary', 'secondary', 'tertiary', 'minor']]],
       paint: {
-        'line-color': '#dcdcdc',
+        'line-color': initial.road,
         'line-width': ['interpolate', ['exponential', 1.6], ['zoom'], 6, 0.4, 18, 14],
       },
     },
     {
       id: 'borders', type: 'line', source: 'osm', 'source-layer': 'boundary',
       filter: ['all', ['==', ['get', 'admin_level'], 2], ['!=', ['get', 'maritime'], 1]],
-      paint: { 'line-color': '#aaa', 'line-width': 0.6 },
+      paint: { 'line-color': initial.border, 'line-width': 0.6 },
     },
     {
       id: 'country-labels', type: 'symbol', source: 'osm', 'source-layer': 'place', minzoom: 3, maxzoom: 7,
       filter: ['==', ['get', 'class'], 'country'],
       layout: { 'text-field': label, 'text-font': ['Noto Sans Regular'], 'text-size': 11, 'text-transform': 'lowercase' },
-      paint: { 'text-color': '#888' },
+      paint: { 'text-color': initial.label },
     },
     {
       id: 'city-labels', type: 'symbol', source: 'osm', 'source-layer': 'place', minzoom: 5,
       filter: ['in', ['get', 'class'], ['literal', ['city', 'town']]],
       layout: { 'text-field': label, 'text-font': ['Noto Sans Regular'], 'text-size': 11, 'text-transform': 'lowercase' },
-      paint: { 'text-color': '#888' },
+      paint: { 'text-color': initial.label },
     },
   ],
 };
@@ -74,6 +97,14 @@ const map = new maplibregl.Map({
   renderWorldCopies: false,
 });
 
+function applyTheme() {
+  const colors = palette();
+  for (const [layer, prop, key] of THEMED) {
+    if (map.getLayer(layer)) map.setPaintProperty(layer, prop, colors[key]);
+  }
+}
+darkQuery.addEventListener('change', applyTheme);
+
 map.on('load', () => {
   map.addSource('drawings', {
     type: 'geojson',
@@ -93,7 +124,7 @@ map.on('load', () => {
   map.addLayer({
     id: 'clusters', type: 'circle', source: 'drawings', filter: ['has', 'point_count'],
     paint: {
-      'circle-color': INK,
+      'circle-color': initial.ink,
       'circle-radius': ['interpolate', ['linear'], ['zoom'],
         ZOOMED - 1, 4,
         ZOOMED, ['step', ['get', 'point_count'], 12, 10, 16, 50, 22],
@@ -104,15 +135,15 @@ map.on('load', () => {
   map.addLayer({
     id: 'cluster-count', type: 'symbol', source: 'drawings', filter: ['has', 'point_count'],
     layout: { 'text-field': ['get', 'point_count_abbreviated'], 'text-font': ['Noto Sans Regular'], 'text-size': 11 },
-    paint: { 'text-color': PAPER, 'text-opacity': fade(ZOOMED - 0.3, ZOOMED) },
+    paint: { 'text-color': initial.paper, 'text-opacity': fade(ZOOMED - 0.3, ZOOMED) },
   });
 
   map.addLayer({
     id: 'points', type: 'circle', source: 'drawings', filter: ['!', ['has', 'point_count']],
     paint: {
-      'circle-color': INK,
+      'circle-color': initial.ink,
       'circle-radius': ['interpolate', ['linear'], ['zoom'], ZOOMED - 1, 3, ZOOMED, 6],
-      'circle-stroke-color': PAPER,
+      'circle-stroke-color': initial.paper,
       'circle-stroke-width': ['interpolate', ['linear'], ['zoom'], ZOOMED - 1, 0, ZOOMED, 2],
     },
   });
