@@ -12,5 +12,19 @@
     "createdAt": "2026-11-02T16:09:25.760Z",
     "image": "/uploads/1-b055ae39.webp",
     "thumb": "/uploads/1-b055ae39-thumb.webp"
+  },
+  {
+    "id": 2,
+    "type": "analog",
+    "mediums": [
+      "procreate"
+    ],
+    "lat": -37.85736801,
+    "lng": 175.68078281,
+    "country": "NZ",
+    "comment": "",
+    "createdAt": "2026-11-02T20:06:30.182Z",
+    "image": "/uploads/2-909f632b.webp",
+    "thumb": "/uploads/2-909f632b-thumb.webp"
   }
 ]
