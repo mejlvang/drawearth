@@ -26,5 +26,19 @@
     "createdAt": "2026-11-02T20:06:30.182Z",
     "image": "/uploads/2-909f632b.webp",
     "thumb": "/uploads/2-909f632b-thumb.webp"
+  },
+  {
+    "id": 3,
+    "type": "analog",
+    "mediums": [
+      "procreate"
+    ],
+    "lat": 16.80579716,
+    "lng": 41.77783086,
+    "country": "SA",
+    "comment": "",
+    "createdAt": "2026-11-04T20:03:12.588Z",
+    "image": "/uploads/3-ebde9d62.webp",
+    "thumb": "/uploads/3-ebde9d62-thumb.webp"
   }
 ]
