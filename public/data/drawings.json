@@ -15,7 +15,7 @@
   },
   {
     "id": 2,
-    "type": "analog",
+    "type": "digital",
     "mediums": [
       "procreate"
     ],
@@ -25,7 +25,9 @@
     "comment": "",
     "createdAt": "2026-11-02T20:06:30.182Z",
     "image": "/uploads/2-909f632b.webp",
-    "thumb": "/uploads/2-909f632b-thumb.webp"
+    "thumb": "/uploads/2-909f632b-thumb.webp",
+    "sourceUrl": null,
+    "updatedAt": "2026-11-05T13:36:04.608Z"
   },
   {
     "id": 3,
