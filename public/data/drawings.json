@@ -44,5 +44,20 @@
     "thumb": "/uploads/3-ebde9d62-thumb.webp",
     "sourceUrl": null,
     "updatedAt": "2026-11-05T13:36:18.777Z"
+  },
+  {
+    "id": 4,
+    "type": "digital",
+    "mediums": [
+      "figma"
+    ],
+    "lat": 52.0414516,
+    "lng": -9.530988,
+    "sourceUrl": "https://www.google.com/maps/@52.0414516,-9.530988,22a,75y,244.55h,98.64t/data=!3m7!1e1!3m5!1s2C-xyoOFvjmeLtP3yJTWFw!2e0!6shttps:%2F%2Fstreetviewpixels-pa.clients6.google.com%2Fv1%2Fthumbnail%3Fcb_client%3Dmaps_sv.tactile%26w%3D900%26h%3D600%26pitch%3D-8.638404639944554%26panoid%3D2C-xyoOFvjmeLtP3yJTWFw%26yaw%3D244.54777736531722!7i13312!8i6656?entry=ttu&g_ep=EgoyMDI2MTEwMS4wIKXMDSoASAFQAw%3D%3D",
+    "country": "IE",
+    "comment": "",
+    "createdAt": "2026-11-05T16:56:14.697Z",
+    "image": "/uploads/4-7ceade59.webp",
+    "thumb": "/uploads/4-7ceade59-thumb.webp"
   }
 ]
