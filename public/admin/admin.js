@@ -1,4 +1,4 @@
-import { DEFAULT_MEDIUMS, TYPES, countryList, countryName, formatCoords, formatId, isValidTag, normalizeTag } from '/shared.js';
+import { DEFAULT_MEDIUMS, TYPES, countryList, countryName, formatCoords, formatId, isValidTag, mapSourceUrl, normalizeTag } from '/shared.js';
 import { UPLOAD_DIR } from './config.js';
 import * as github from './github.js';
 
@@ -81,6 +81,15 @@ function renderRow(d) {
   img.alt = '';
   img.loading = 'lazy';
 
+  const uploaded = document.createElement('time');
+  if (d.createdAt) {
+    uploaded.dateTime = d.createdAt;
+    uploaded.textContent = new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(d.createdAt));
+    uploaded.title = d.createdAt;
+  } else {
+    uploaded.textContent = '—';
+  }
+
   const cells = [
     img,
     formatId(d.id),
@@ -89,6 +98,7 @@ function renderRow(d) {
     countryName(d.country).toLowerCase(),
     formatCoords(d.lat, d.lng),
     d.comment || '',
+    uploaded,
   ];
   for (const value of cells) {
     const td = document.createElement('td');
@@ -145,7 +155,7 @@ function startEdit(d) {
   editor.type.value = d.type;
   selectedMediums = new Set(d.mediums);
   renderMediums();
-  editor.coords.value = `${d.lat}, ${d.lng}`;
+  editor.coords.value = d.sourceUrl || `${d.lat}, ${d.lng}`;
   editor.country.value = d.country;
   editor.comment.value = d.comment || '';
   editor.image.value = '';
@@ -289,6 +299,7 @@ editor.addEventListener('submit', async (e) => {
     mediums: [...selectedMediums],
     lat: coords.lat,
     lng: coords.lng,
+    sourceUrl: mapSourceUrl(editor.coords.value.trim()),
     country: editor.country.value,
     comment: editor.comment.value.trim(),
   };

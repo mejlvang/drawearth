@@ -159,7 +159,7 @@ button.link {
   background: var(--line);
 }
 
-.list td:nth-child(6) { white-space: nowrap; }
+.list td:nth-child(6), .list td:nth-child(8) { white-space: nowrap; }
 
 .list td:last-child {
   white-space: nowrap;

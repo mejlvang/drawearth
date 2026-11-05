@@ -188,7 +188,7 @@ button, input, select, textarea {
 .meta dt { color: var(--muted); }
 .meta dd { margin: 0; }
 
-#drawing-comment:empty { display: none; }
+.meta a { color: inherit; }
 
 /* ---------- maplibre overrides ---------- */
 

@@ -1,5 +1,5 @@
 import * as maplibregl from '/vendor/maplibre-gl.mjs';
-import { TOTAL_COUNTRIES, countryName, formatCoords, formatId } from './shared.js';
+import { TOTAL_COUNTRIES, countryName, formatCoords, formatId, mapSourceUrl } from './shared.js';
 
 const ZOOMED = 3;
 
@@ -101,6 +101,16 @@ const room = innerWidth > 720
   : Math.min(innerWidth - 32, innerHeight - 320);
 const startZoom = Math.min(2.5, Math.max(0.8, Math.log2((Math.max(room, 100) * Math.PI) / 512) + 0.5));
 
+class CollapsedAttributionControl extends maplibregl.AttributionControl {
+  onAdd(map) {
+    const container = super.onAdd(map);
+    container.classList.add('maplibregl-compact');
+    container.classList.remove('maplibregl-compact-show');
+    container.removeAttribute('open');
+    return container;
+  }
+}
+
 const map = new maplibregl.Map({
   container: 'map',
   style,
@@ -108,9 +118,10 @@ const map = new maplibregl.Map({
   zoom: startZoom,
   minZoom: 0.5,
   maxZoom: 18,
-  attributionControl: { compact: true },
+  attributionControl: false,
   renderWorldCopies: false,
 });
+map.addControl(new CollapsedAttributionControl({ compact: true }));
 
 function applyTheme() {
   const colors = palette();
@@ -259,21 +270,35 @@ function openDrawing(d) {
   if (!d) return;
   img.src = d.image;
   img.alt = `Drawing ${formatId(d.id)}: ${d.mediums.join(', ')}, ${countryName(d.country)}`;
+  const coordinates = document.createElement('span');
+  const sourceUrl = mapSourceUrl(d.sourceUrl);
+  if (sourceUrl) {
+    const link = document.createElement('a');
+    link.href = sourceUrl;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    link.textContent = formatCoords(d.lat, d.lng);
+    coordinates.append(link);
+  } else {
+    coordinates.textContent = formatCoords(d.lat, d.lng);
+  }
   const rows = [
     ['id', formatId(d.id)],
     ['medium', d.mediums.join(', ')],
     ['type', d.type],
     ['country', countryName(d.country).toLowerCase()],
-    ['coordinates', formatCoords(d.lat, d.lng)],
+    ['coordinates', coordinates],
   ];
   document.getElementById('drawing-meta').replaceChildren(...rows.flatMap(([k, v]) => {
     const dt = document.createElement('dt');
     const dd = document.createElement('dd');
     dt.textContent = k;
-    dd.textContent = v;
+    dd.append(v);
     return [dt, dd];
   }));
-  document.getElementById('drawing-comment').textContent = d.comment || '';
+  const comment = document.getElementById('drawing-comment');
+  comment.textContent = d.comment?.trim() || '';
+  comment.hidden = !comment.textContent;
   dialog.showModal();
 }
 

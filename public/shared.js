@@ -41,3 +41,9 @@ export function formatId(id) {
 export function formatCoords(lat, lng) {
   return `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
 }
+
+export function mapSourceUrl(value) {
+  if (!URL.canParse(value)) return null;
+  const url = new URL(value);
+  return ['https:', 'http:'].includes(url.protocol) ? url.href : null;
+}
