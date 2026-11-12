@@ -59,5 +59,20 @@
     "createdAt": "2026-11-05T16:56:14.697Z",
     "image": "/uploads/4-7ceade59.webp",
     "thumb": "/uploads/4-7ceade59-thumb.webp"
+  },
+  {
+    "id": 5,
+    "type": "digital",
+    "mediums": [
+      "procreate"
+    ],
+    "lat": -21.2387658,
+    "lng": -159.73991283,
+    "sourceUrl": "https://earth.app.goo.gl/?apn=com.google.earth&isi=293622097&ius=googleearth&link=https%3a%2f%2fearth.google.com%2fweb%2f%40-21.2387658,-159.73991283,50.50804715a,0d,90y,354.29243412h,104.83154645t,0r%2fdata%3dCgRCAggBIhoKFkNJSE0wb2dLRUlDQWdJRHFpLS1PTlEQBTIpCicKJQohMUlPX2NEaTU4MnpiRWl3MjVMamhVWk5wRmpvTWVIQWZSIAFCAggASggIn7jYzwYQAQ",
+    "country": "CK",
+    "comment": "",
+    "createdAt": "2026-11-12T20:00:29.030Z",
+    "image": "/uploads/5-9bf3cbbe.jpg",
+    "thumb": "/uploads/5-9bf3cbbe-thumb.jpg"
   }
 ]
