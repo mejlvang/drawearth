@@ -74,5 +74,20 @@
     "createdAt": "2026-11-12T20:00:29.030Z",
     "image": "/uploads/5-9bf3cbbe.jpg",
     "thumb": "/uploads/5-9bf3cbbe-thumb.jpg"
+  },
+  {
+    "id": 6,
+    "type": "digital",
+    "mediums": [
+      "procreate"
+    ],
+    "lat": 69.47691721,
+    "lng": 24.1918998,
+    "sourceUrl": "https://earth.app.goo.gl/?apn=com.google.earth&isi=293622097&ius=googleearth&link=https%3a%2f%2fearth.google.com%2fweb%2f%4069.47691721,24.1918998,366.46939925a,0d,73.38958271y,50.31826569h,87.37634195t,0r%2fdata%3dCgRCAggBIhsKF0NJSE0wb2dLRUlDQWdJRHF3N3IyaWdFEAUyKQonCiUKITFJT19jRGk1ODJ6YkVpdzI1TGpoVVpOcEZqb01lSEFmUiABQgIIAEoICM6DuKoCEAE",
+    "country": "NO",
+    "comment": "",
+    "createdAt": "2026-11-14T19:43:56.292Z",
+    "image": "/uploads/6-9c43db8e.jpg",
+    "thumb": "/uploads/6-9c43db8e-thumb.jpg"
   }
 ]
