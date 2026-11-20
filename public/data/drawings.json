@@ -89,5 +89,20 @@
     "createdAt": "2026-11-14T19:43:56.292Z",
     "image": "/uploads/6-9c43db8e.jpg",
     "thumb": "/uploads/6-9c43db8e-thumb.jpg"
+  },
+  {
+    "id": 7,
+    "type": "digital",
+    "mediums": [
+      "procreate"
+    ],
+    "lat": 40.71760939,
+    "lng": -74.00339595,
+    "sourceUrl": "https://earth.app.goo.gl/?apn=com.google.earth&isi=293622097&ius=googleearth&link=https%3a%2f%2fearth.google.com%2fweb%2fsearch%2f368%2bBroadway,%2bNew%2bYork,%2bNY,%2bUSA%2f%4040.71760939,-74.00339595,9.87637767a,0d,90y,81.82315585h,126.27294419t,0r%2fdata%3dCj8aEQoNL2cvMTFueDI0XzVtZBgBIiYKJAkJzcaMhJFNQBEebHumec36vxkDlU8lNCpSQCEcy8W-NNxgwEICCAEiGgoWZk94bHlJYjBkYXJoYkJwWldsZ3hpQRACMikKJwolCiExSU9fY0RpNTgyemJFaXcyNUxqaFVaTnBGam9NZUhBZlIgAUICCABKCAjOg7iqAhAB",
+    "country": "US",
+    "comment": "Studio of Casey Neistat",
+    "createdAt": "2026-11-20T20:19:08.486Z",
+    "image": "/uploads/7-225907e4.jpg",
+    "thumb": "/uploads/7-225907e4-thumb.jpg"
   }
 ]
