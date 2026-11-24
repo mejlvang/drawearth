@@ -107,6 +107,12 @@ button, input, select, textarea {
   border-bottom: 1px solid var(--line);
 }
 
+.panel .tally {
+  max-height: 50vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
 .panel p { margin: 12px 0 0; }
 
 .hint {
@@ -139,6 +145,7 @@ button, input, select, textarea {
   .zoomed .panel-left,
   .zoomed .panel-right { transform: none; }
   .hint { display: none; }
+  .panel .tally { max-height: 28vh; }
 }
 
 /* ---------- modal ---------- */
@@ -153,15 +160,23 @@ button, input, select, textarea {
 
 .modal::backdrop { background: var(--backdrop); }
 
+.modal:focus { outline: none; }
+
+.modal-bar {
+  display: flex;
+  justify-content: flex-end;
+  padding: 8px 8px 0;
+}
+
 .modal figure {
   margin: 0;
-  padding: var(--gap);
+  padding: 0 var(--gap) var(--gap);
 }
 
 .modal img {
   display: block;
   max-width: 100%;
-  max-height: calc(100vh - 220px);
+  max-height: calc(100vh - 250px);
   margin: 0 auto;
   background: var(--line);
 }
@@ -169,14 +184,13 @@ button, input, select, textarea {
 .modal figcaption { margin-top: 16px; }
 
 .modal .close {
-  position: absolute;
-  top: 8px;
-  right: 8px;
   border: 0;
-  background: var(--paper);
+  background: none;
   padding: 4px 8px;
   cursor: pointer;
 }
+
+.modal .close:focus:not(:focus-visible) { outline: none; }
 
 .meta {
   display: grid;

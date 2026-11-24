@@ -237,7 +237,7 @@ for (const type of ['wheel', 'mousedown', 'touchstart']) {
 function renderStats(list) {
   document.getElementById('total').textContent = `${list.length} drawings`;
   fillTally('mediums', countBy(list, (d) => d.mediums));
-  const countries = countBy(list, (d) => [d.country]);
+  const countries = byLatest(list, (d) => d.country);
   fillTally('countries', countries, countryName);
   document.getElementById('coverage').textContent = `${countries.length}/${TOTAL_COUNTRIES} countries drawn`;
 }
@@ -248,6 +248,21 @@ function countBy(list, keys) {
     for (const key of keys(item)) counts.set(key, (counts.get(key) || 0) + 1);
   }
   return [...counts].sort((a, b) => b[1] - a[1] || String(a[0]).localeCompare(b[0]));
+}
+
+// [key, count] entries, most recently drawn first.
+function byLatest(list, key) {
+  const stats = new Map();
+  for (const d of list) {
+    const k = key(d);
+    const s = stats.get(k) || { count: 0, latest: '' };
+    s.count += 1;
+    if (d.createdAt > s.latest) s.latest = d.createdAt;
+    stats.set(k, s);
+  }
+  return [...stats]
+    .sort((a, b) => b[1].latest.localeCompare(a[1].latest))
+    .map(([k, s]) => [k, s.count]);
 }
 
 function fillTally(id, entries, format = (v) => v) {
@@ -300,6 +315,8 @@ function openDrawing(d) {
   comment.textContent = d.comment?.trim() || '';
   comment.hidden = !comment.textContent;
   dialog.showModal();
+  // Focus the dialog itself so the close button isn't auto-focused; Tab still reaches it.
+  dialog.focus();
 }
 
 dialog.addEventListener('click', (e) => {
