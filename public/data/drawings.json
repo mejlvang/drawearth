@@ -104,5 +104,21 @@
     "createdAt": "2026-11-20T20:19:08.486Z",
     "image": "/uploads/7-225907e4.jpg",
     "thumb": "/uploads/7-225907e4-thumb.jpg"
+  },
+  {
+    "id": 8,
+    "type": "analog",
+    "mediums": [
+      "fineliner",
+      "pencil"
+    ],
+    "lat": 19.23474306,
+    "lng": 72.85512177,
+    "sourceUrl": "https://earth.google.com/web/search/Hobbiton+Movie+Set+Tours+Buckland+Road,+Matamata,+New+Zealand/@19.23474306,72.85512177,31.4193573a,0d,69.88491449y,11.8323485h,104.45811938t,0r/data=CiwiJgokCWDx3fzMp0FAEUQXyaAl9D7AGexyjDqVw09AIelyjDqVw0_AQgIIASIaChYwN2VWQkVDX1ZlNGVfUkpvVDBnNEl3EAIyKQonCiUKITFJT19jRGk1ODJ6YkVpdzI1TGpoVVpOcEZqb01lSEFmUiABOgMKATBCAggASggIybaXtQYQAQ",
+    "country": "IN",
+    "comment": "",
+    "createdAt": "2026-11-24T15:58:49.761Z",
+    "image": "/uploads/8-97fdfb9d.jpg",
+    "thumb": "/uploads/8-97fdfb9d-thumb.jpg"
   }
 ]
